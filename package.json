@@ -1,0 +1,9 @@
+{
+    "name": "fall-panic",
+    "version": "0.1.0",
+    "main": "src/App.jsx",
+    "dependencies": {
+        "react": "18.3.1",
+        "react-native": "0.76.5"
+    }
+}
