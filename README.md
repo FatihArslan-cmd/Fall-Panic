@@ -1,6 +1,6 @@
 <h1>Fall Panic</h1>
 
-<p><strong>Bingo</strong> is a submodule of the main <a href="https://github.com/FatihArslan-cmd/GamePlatform-Toyota32Bit" target="_blank">GamePlatform-Toyota32Bit</a> project. It is designed to be included within a <code>lerna</code> monorepo structure under the <code>packages</code> directory.</p>
+<p><strong>Fall Panic</strong> is a submodule of the main <a href="https://github.com/FatihArslan-cmd/GamePlatform-Toyota32Bit" target="_blank">GamePlatform-Toyota32Bit</a> project. It is designed to be included within a <code>lerna</code> monorepo structure under the <code>packages</code> directory.</p>
 
 <h2>Installation</h2>
 
