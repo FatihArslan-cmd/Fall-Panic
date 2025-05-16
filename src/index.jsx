@@ -1,4 +1,3 @@
-import BackButton from "../../../src/components/BackIcon";
 import GamePage from "fall-panic/src/pages/GamePage/GamePage";
 import MenuPage from "fall-panic/src/pages/MenuPage/MenuPage";
 import React, { useState } from "react";
@@ -20,7 +19,6 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <BackButton/>
       {content}
     </View>
   );

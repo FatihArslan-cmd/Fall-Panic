@@ -1,6 +1,8 @@
 import Leaf from "./components/Leaf";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, View } from "react-native";
+import ResultPage from "fall-panic/src/pages/ResultPage/ResultPage";
+import SettingsPage from "fall-panic/src/pages/SettingsPage/SettingsPage";
+import { Animated, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
 import { COLORS } from "./constants/colors";
 import { height } from "./constants/dimensions";
@@ -13,7 +15,14 @@ import {
   createLeaves
 } from "./utils/animations";
 
+const DISPLAY_STATE = {
+  MENU: 'menu',
+  SETTINGS: 'settings',
+  SCORES: 'scores',
+};
+
 const MenuPage = ({ onStartPress }) => {
+  const [displayState, setDisplayState] = useState(DISPLAY_STATE.MENU);
   const [leaves, setLeaves] = useState([]);
   const titleAnimation = useRef(new Animated.Value(0)).current;
   const buttonAnimation = useRef(new Animated.Value(0)).current;
@@ -24,11 +33,94 @@ const MenuPage = ({ onStartPress }) => {
   });
 
   useEffect(() => {
-    startTitleAnimation(titleAnimation);
-    startButtonAnimation(buttonAnimation);
-
     setLeaves(createLeaves(LEAF_COUNT));
   }, []);
+
+  useEffect(() => {
+      if (displayState === DISPLAY_STATE.MENU) {
+           titleAnimation.setValue(0);
+           buttonAnimation.setValue(0);
+           startTitleAnimation(titleAnimation);
+           startButtonAnimation(buttonAnimation);
+      }
+  }, [displayState, titleAnimation, buttonAnimation]);
+
+  const handleBackToMenu = () => {
+      setDisplayState(DISPLAY_STATE.MENU);
+  };
+
+  const goToSettings = () => {
+      setDisplayState(DISPLAY_STATE.SETTINGS);
+  };
+
+  const goToScores = () => {
+      setDisplayState(DISPLAY_STATE.SCORES);
+  };
+
+  const renderForegroundContent = () => {
+    switch (displayState) {
+      case DISPLAY_STATE.SETTINGS:
+        return <SettingsPage onClose={handleBackToMenu} />;
+      case DISPLAY_STATE.SCORES:
+        return <ResultPage onClose={handleBackToMenu} />;
+      case DISPLAY_STATE.MENU:
+      default:
+        return (
+          <View style={localStyles.menuForegroundContent}>
+            <Animated.Text
+              style={[
+                styles.title,
+                {
+                  transform: [{ scale: logoScale }],
+                  textShadowColor: 'rgba(215, 57, 1, 0.5)',
+                  textShadowOffset: { width: 0, height: 2 },
+                  textShadowRadius: 10,
+                  marginBottom: 40, 
+                }
+              ]}
+            >
+              Fall Panic
+            </Animated.Text>
+
+            <Animated.View style={{
+              opacity: buttonAnimation,
+              transform: [{ translateY: buttonAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [50, 0]
+              })}]
+            }}>
+              <Button
+                mode="contained"
+                onPress={onStartPress}
+                style={styles.button}
+                buttonColor={COLORS.primary}
+                labelStyle={styles.buttonText}
+              >
+                Start Game
+              </Button>
+
+              <Button
+                mode="outlined"
+                onPress={goToSettings}
+                style={[styles.button, { borderColor: COLORS.primary, borderWidth: 2 }]}
+                labelStyle={[styles.buttonTextOutlined, { color: COLORS.primary }]}
+              >
+                Settings
+              </Button>
+
+              <Button
+                mode="outlined"
+                onPress={goToScores}
+                style={[styles.button, { borderColor: COLORS.primary, borderWidth: 2 }]}
+                labelStyle={[styles.buttonTextOutlined, { color: COLORS.primary }]}
+              >
+                Scores
+              </Button>
+            </Animated.View>
+          </View>
+        );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -49,6 +141,7 @@ const MenuPage = ({ onStartPress }) => {
           <Leaf
             key={leaf.id}
             style={{
+              position: 'absolute',
               left: 0,
               top: 0,
               transform: [
@@ -61,58 +154,25 @@ const MenuPage = ({ onStartPress }) => {
         );
       })}
 
-      <Animated.Text
-        style={[
-          styles.title,
-          {
-            transform: [{ scale: logoScale }],
-            textShadowColor: 'rgba(215, 57, 1, 0.5)',
-            textShadowOffset: { width: 0, height: 2 },
-            textShadowRadius: 10
-          }
-        ]}
-      >
-        Fall Panic
-      </Animated.Text>
+      <View style={localStyles.foregroundContainer}>
+        {renderForegroundContent()}
+      </View>
 
-      <Animated.View style={{
-        opacity: buttonAnimation,
-        transform: [{ translateY: buttonAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [50, 0]
-        })}]
-      }}>
-        <Button
-          mode="contained"
-          onPress={onStartPress}
-          style={styles.button}
-          buttonColor={COLORS.primary}
-          labelStyle={styles.buttonText}
-        >
-          Start Game
-        </Button>
-
-        <Button
-          mode="outlined"
-          onPress={() => console.log('Ayarlar Düğmesi Basıldı')}
-          style={[styles.button, { borderColor: COLORS.primary, borderWidth: 2 }]}
-          labelStyle={[styles.buttonTextOutlined, { color: COLORS.primary }]}
-        >
-          Settings
-        </Button>
-
-        <Button
-          mode="outlined"
-          onPress={() => console.log('Skorlar Düğmesi Basıldı')}
-          style={[styles.button, { borderColor: COLORS.primary, borderWidth: 2 }]}
-          labelStyle={[styles.buttonTextOutlined, { color: COLORS.primary }]}
-        >
-          Scores
-        </Button>
-
-      </Animated.View>
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+    foregroundContainer: {
+        ...StyleSheet.absoluteFillObject,
+        zIndex: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    menuForegroundContent: {
+        alignItems: 'center',
+    },
+});
 
 export default MenuPage;
