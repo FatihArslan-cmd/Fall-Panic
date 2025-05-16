@@ -1,5 +1,5 @@
 import BackButton from "../../../src/components/BackIcon";
-import GamePage from "fall-panic/src/pages/GamePage";
+import GamePage from "fall-panic/src/pages/GamePage/GamePage";
 import MenuPage from "fall-panic/src/pages/MenuPage/MenuPage";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
