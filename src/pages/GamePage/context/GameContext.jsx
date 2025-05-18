@@ -1,70 +1,49 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { CIRCLE_SIZE, MOVEMENT_SPEED, screenWidth } from "../constants/index";
 
-import {
-  CIRCLE_SIZE,
-  MOVEMENT_SPEED,
-  SCREEN_WIDTH,
-} from '../constants/index';
-
-const GameContext = createContext(undefined);
+const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
-  const [circlePositionX, setCirclePositionX] = useState((SCREEN_WIDTH - CIRCLE_SIZE) / 2);
-  const [isMovingLeft, setIsMovingLeft] = useState(false);
-  const [isMovingRight, setIsMovingRight] = useState(false);
-
+  const [positionX, setPositionX] = useState((screenWidth - CIRCLE_SIZE) / 2);
+  const [isMoving, setIsMoving] = useState({ left: false, right: false });
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const scoreTimerId = useRef(null);
   const animationFrameId = useRef(null);
 
-  const handleTouchStart = (event) => {
-    const touchX = event.nativeEvent.locationX;
-    const circleCenterX = circlePositionX + CIRCLE_SIZE / 2;
-
-    if (touchX > circleCenterX) {
-      setIsMovingRight(true);
-      setIsMovingLeft(false);
-    } else if (touchX < circleCenterX) {
-      setIsMovingLeft(true);
-      setIsMovingRight(false);
-    }
+  const handleTouchStart = (touchX) => {
+    if (gameOver) return; 
+    
+    const circleCenterX = positionX + CIRCLE_SIZE / 2;
+    setIsMoving({ 
+      left: touchX < circleCenterX, 
+      right: touchX > circleCenterX 
+    });
   };
 
   const handleTouchEnd = () => {
-    setIsMovingLeft(false);
-    setIsMovingRight(false);
+    setIsMoving({ left: false, right: false });
+  };
+
+  const restartGame = () => {
+    setGameOver(false);
+    setScore(0);
+    setPositionX((screenWidth - CIRCLE_SIZE) / 2); 
   };
 
   useEffect(() => {
     const animate = () => {
-      setCirclePositionX(prevPositionX => {
-        let newPositionX = prevPositionX;
-
-        if (isMovingLeft) {
-          newPositionX = prevPositionX - MOVEMENT_SPEED;
-        } else if (isMovingRight) {
-          newPositionX = prevPositionX + MOVEMENT_SPEED;
-        }
-
-        newPositionX = Math.max(0, newPositionX);
-        newPositionX = Math.min(SCREEN_WIDTH - CIRCLE_SIZE, newPositionX);
-
-        return newPositionX;
+      setPositionX(prev => {
+        let newX = prev;
+        if (isMoving.left) newX -= MOVEMENT_SPEED;
+        if (isMoving.right) newX += MOVEMENT_SPEED;
+        return Math.max(0, Math.min(screenWidth - CIRCLE_SIZE, newX));
       });
-
-      if (isMovingLeft || isMovingRight) {
-        animationFrameId.current = requestAnimationFrame(animate);
-      }
+      animationFrameId.current = requestAnimationFrame(animate);
     };
 
-    if (isMovingLeft || isMovingRight) {
-       if (animationFrameId.current) {
-         cancelAnimationFrame(animationFrameId.current);
-       }
+    if ((isMoving.left || isMoving.right) && !gameOver) {
       animationFrameId.current = requestAnimationFrame(animate);
-    } else {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = null;
-      }
     }
 
     return () => {
@@ -72,17 +51,39 @@ export const GameProvider = ({ children }) => {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
+  }, [isMoving, gameOver]);
 
-  }, [isMovingLeft, isMovingRight]);
+  useEffect(() => {
+    if (gameOver) {
+      if (scoreTimerId.current) {
+        clearInterval(scoreTimerId.current);
+      }
+      return;
+    }
 
-  const contextValue = {
-    circlePositionX,
-    handleTouchStart,
-    handleTouchEnd,
-  };
+    scoreTimerId.current = setInterval(() => {
+      setScore(prevScore => prevScore + 1);
+    }, 1000);
+
+    return () => {
+      if (scoreTimerId.current) {
+        clearInterval(scoreTimerId.current);
+      }
+    };
+  }, [gameOver]);
 
   return (
-    <GameContext.Provider value={contextValue}>
+    <GameContext.Provider 
+      value={{ 
+        positionX, 
+        handleTouchStart, 
+        handleTouchEnd,
+        gameOver,
+        setGameOver,
+        score,
+        restartGame
+      }}
+    >
       {children}
     </GameContext.Provider>
   );

@@ -1,4 +1,5 @@
 import Leaf from "./components/Leaf";
+import QuitButton from "./components/QuitButton";
 import React, { useEffect, useRef, useState } from "react";
 import ResultPage from "fall-panic/src/pages/ResultPage/ResultPage";
 import SettingsPage from "fall-panic/src/pages/SettingsPage/SettingsPage";
@@ -37,42 +38,22 @@ const MenuPage = ({ onStartPress }) => {
   }, []);
 
   useEffect(() => {
-      console.log(`Display state changed to: ${displayState}`);
-      if (displayState === DISPLAY_STATE.MENU) {
-           console.log('Entering MENU state, starting animations...');
-           titleAnimation.setValue(0);
-           buttonAnimation.setValue(0);
-           startTitleAnimation(titleAnimation);
-           startButtonAnimation(buttonAnimation);
-
-      } else {
-           console.log(`Leaving ${displayState}, stopping animations...`);
-           titleAnimation.stopAnimation();
-           buttonAnimation.stopAnimation();
-           titleAnimation.setValue(0);
-           buttonAnimation.setValue(0);
-      }
-
-  }, [displayState, titleAnimation, buttonAnimation]);
-
-
-  useEffect(() => {
-      if (displayState === DISPLAY_STATE.MENU) {
-          console.log('Entering MENU state, starting animations...');
+      const stopAndResetAnimations = () => {
+          titleAnimation.stopAnimation();
+          buttonAnimation.stopAnimation();
           titleAnimation.setValue(0);
           buttonAnimation.setValue(0);
-          startTitleAnimation(titleAnimation);
-          startButtonAnimation(buttonAnimation);
+      };
+
+      if (displayState === DISPLAY_STATE.MENU) {
+           startTitleAnimation(titleAnimation);
+           startButtonAnimation(buttonAnimation);
+      } else {
+           stopAndResetAnimations();
       }
 
       return () => {
-         if (displayState === DISPLAY_STATE.MENU) {
-             console.log('Cleaning up from MENU state, stopping animations...');
-             titleAnimation.stopAnimation();
-             buttonAnimation.stopAnimation();
-             titleAnimation.setValue(0);
-             buttonAnimation.setValue(0);
-         }
+         stopAndResetAnimations();
       };
 
   }, [displayState, titleAnimation, buttonAnimation]);
@@ -83,10 +64,14 @@ const MenuPage = ({ onStartPress }) => {
   };
 
   const goToSettings = () => {
+      titleAnimation.stopAnimation();
+      buttonAnimation.stopAnimation();
       setDisplayState(DISPLAY_STATE.SETTINGS);
   };
 
   const goToScores = () => {
+      titleAnimation.stopAnimation();
+      buttonAnimation.stopAnimation();
       setDisplayState(DISPLAY_STATE.SCORES);
   };
 
@@ -149,6 +134,9 @@ const MenuPage = ({ onStartPress }) => {
               >
                 Scores
               </Button>
+
+              <QuitButton  />
+
             </Animated.View>
           </View>
         );

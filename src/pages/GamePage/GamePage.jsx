@@ -1,27 +1,26 @@
+import FallingObjectsManager from "fall-panic/src/pages/GamePage/context/FallingObjectsManager";
+import GameOverOverlay from "fall-panic/src/pages/GamePage/components/GameOverOverlay";
+import InputController from "fall-panic/src/pages/GamePage/components/InputController";
 import Player from "fall-panic/src/pages/GamePage/components/Player";
 import React from "react";
-import { useBackgroundSound } from "fall-panic/src/hooks/useBackgroundSound";
-import { GameProvider, useGame } from "fall-panic/src/pages/GamePage/context/GameContext";
-import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
-
-const GamePageContent = () => {
-  const { circlePositionX, handleTouchStart, handleTouchEnd } = useGame();
-  
-  useBackgroundSound('FallPanicSoundTrack.mp3');
-
-  return (
-    <TouchableWithoutFeedback onPressIn={handleTouchStart} onPressOut={handleTouchEnd}>
-      <View style={styles.container}>
-        <Player positionX={circlePositionX} />
-      </View>
-    </TouchableWithoutFeedback>
-  );
-};
+import ScoreDisplay from "fall-panic/src/pages/GamePage/components/ScoreDisplay";
+import { StyleSheet, View } from "react-native";
+import { GameProvider } from "./context/GameContext";
 
 const GamePage = () => {
   return (
     <GameProvider>
-      <GamePageContent />
+      <InputController>
+        <View style={styles.container}>
+          <View style={styles.background} />
+          
+          <FallingObjectsManager />
+          <Player />
+          <ScoreDisplay />
+          
+          <GameOverOverlay />
+        </View>
+      </InputController>
     </GameProvider>
   );
 };
@@ -29,7 +28,15 @@ const GamePage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f2e8',
+    position: "relative",
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#f8f2e8",
   },
 });
 
