@@ -23,6 +23,7 @@ const BackButton = ({ buttonAnimation, onPress }) => {
         style={menuStyles.button}
         buttonColor={COLORS.primary}
         labelStyle={menuStyles.buttonText}
+        icon="arrow-left" 
       >
         Back to Menu
       </Button>

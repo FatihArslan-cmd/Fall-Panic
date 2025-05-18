@@ -12,6 +12,7 @@ const App = () => {
 
   let content;
   if (currentScreen === 'menu') {
+               
     content = <MenuPage onStartPress={handleStartGame} />;
   } else if (currentScreen === 'game') {
     content = <GamePage />;

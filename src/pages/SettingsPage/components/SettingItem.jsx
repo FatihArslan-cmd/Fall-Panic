@@ -14,18 +14,28 @@ const SettingItem = ({ icon, title, children, contentLayout = 'side-by-side' }) 
      contentLayout === 'side-by-side' ? styles.rightContentSideBySide : styles.rightContentStacked
   ];
 
+  const leftContentStyle = [
+      styles.leftContent,
+      contentLayout === 'stacked' && styles.leftContentStacked,
+  ];
+
+  const rightContentFinalStyle = [
+    rightContentStyle,
+    contentLayout === 'side-by-side' && { flex: 1 },
+  ];
+
+
   return (
     <Card style={styles.card}>
       <Card.Content style={cardContentStyle}>
-        <View style={[
-            styles.leftContent,
-            contentLayout === 'stacked' && styles.leftContentStacked
-          ]}
-        >
+        <View style={leftContentStyle}>
           <Icon name={icon} size={24} color="#D73901" style={styles.icon} />
           <Title style={styles.title}>{title}</Title>
         </View>
-        <View style={rightContentStyle}>
+
+        {contentLayout === 'side-by-side' && <View style={styles.spacer} />}
+
+        <View style={rightContentFinalStyle}>
           {children}
         </View>
       </Card.Content>
@@ -36,9 +46,7 @@ const SettingItem = ({ icon, title, children, contentLayout = 'side-by-side' }) 
 const styles = StyleSheet.create({
   card: {
     marginVertical: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    borderWidth: 1,
+    opacity: 0.85,
     elevation: 0,
     borderRadius: 8,
   },
@@ -47,7 +55,6 @@ const styles = StyleSheet.create({
   },
   cardContentSideBySide: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   cardContentStacked: {
@@ -60,6 +67,9 @@ const styles = StyleSheet.create({
   },
   leftContentStacked: {
     marginBottom: 8,
+  },
+  spacer: {
+    width: '30%',
   },
   rightContentBase: {
   },
