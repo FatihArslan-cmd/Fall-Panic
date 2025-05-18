@@ -37,13 +37,46 @@ const MenuPage = ({ onStartPress }) => {
   }, []);
 
   useEffect(() => {
+      console.log(`Display state changed to: ${displayState}`);
       if (displayState === DISPLAY_STATE.MENU) {
+           console.log('Entering MENU state, starting animations...');
            titleAnimation.setValue(0);
            buttonAnimation.setValue(0);
            startTitleAnimation(titleAnimation);
            startButtonAnimation(buttonAnimation);
+
+      } else {
+           console.log(`Leaving ${displayState}, stopping animations...`);
+           titleAnimation.stopAnimation();
+           buttonAnimation.stopAnimation();
+           titleAnimation.setValue(0);
+           buttonAnimation.setValue(0);
       }
+
   }, [displayState, titleAnimation, buttonAnimation]);
+
+
+  useEffect(() => {
+      if (displayState === DISPLAY_STATE.MENU) {
+          console.log('Entering MENU state, starting animations...');
+          titleAnimation.setValue(0);
+          buttonAnimation.setValue(0);
+          startTitleAnimation(titleAnimation);
+          startButtonAnimation(buttonAnimation);
+      }
+
+      return () => {
+         if (displayState === DISPLAY_STATE.MENU) {
+             console.log('Cleaning up from MENU state, stopping animations...');
+             titleAnimation.stopAnimation();
+             buttonAnimation.stopAnimation();
+             titleAnimation.setValue(0);
+             buttonAnimation.setValue(0);
+         }
+      };
+
+  }, [displayState, titleAnimation, buttonAnimation]);
+
 
   const handleBackToMenu = () => {
       setDisplayState(DISPLAY_STATE.MENU);
@@ -66,7 +99,7 @@ const MenuPage = ({ onStartPress }) => {
       case DISPLAY_STATE.MENU:
       default:
         return (
-          <View style={localStyles.menuForegroundContent}>
+          <View key="menu-content" style={localStyles.menuForegroundContent}>
             <Animated.Text
               style={[
                 styles.title,
@@ -75,7 +108,7 @@ const MenuPage = ({ onStartPress }) => {
                   textShadowColor: 'rgba(215, 57, 1, 0.5)',
                   textShadowOffset: { width: 0, height: 2 },
                   textShadowRadius: 10,
-                  marginBottom: 40, 
+                  marginBottom: 40,
                 }
               ]}
             >

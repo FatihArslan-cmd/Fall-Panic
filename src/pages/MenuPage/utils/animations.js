@@ -33,10 +33,10 @@ export const startTitleAnimation = (animationValue) => {
 export const startButtonAnimation = (animationValue) => {
   Animated.timing(animationValue, {
     toValue: 1,
-    duration: 800,
+    duration: 400,
     easing: Easing.elastic(1),
     useNativeDriver: true,
-    delay: 300
+    delay: 100
   }).start();
 };
 

@@ -1,7 +1,6 @@
+import BackButton from "fall-panic/src/components/BackButton";
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
-import { Button } from "react-native-paper";
-import { COLORS } from "../MenuPage/constants/colors";
+import { Animated, StyleSheet, View } from "react-native";
 import { styles as menuStyles } from "../MenuPage/styles/MenuStyle";
 import { startButtonAnimation, startTitleAnimation } from "../MenuPage/utils/animations";
 
@@ -37,23 +36,8 @@ const ResultPage = ({ onClose }) => {
         Scores
       </Animated.Text>
 
-      <Animated.View style={{
-        opacity: buttonAnimation,
-        transform: [{ translateY: buttonAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [50, 0]
-        })}]
-      }}>
-        <Button
-          mode="contained"
-          onPress={onClose}
-          style={menuStyles.button}
-          buttonColor={COLORS.primary}
-          labelStyle={menuStyles.buttonText}
-        >
-          Back to Menu
-        </Button>
-      </Animated.View>
+      <BackButton buttonAnimation={buttonAnimation} onPress={onClose} />
+
     </View>
   )
 }
