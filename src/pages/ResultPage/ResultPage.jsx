@@ -1,11 +1,9 @@
 import BackButton from "fall-panic/src/components/BackButton";
-import FadeIn from "../../../../../src/components/Animations/FadeInAnimation";
 import React, { useEffect, useRef, useState } from "react";
 import ScoreList from "fall-panic/src/pages/ResultPage/components/ScoreList";
 import { mockScoreData } from "fall-panic/src/pages/ResultPage/components/mockData";
 import { Animated, StyleSheet, View } from "react-native";
 import { Surface, Text } from "react-native-paper";
-import { AnimatedSection } from "../../../../../src/components/Animations/EnteringPageAnimation";
 import { styles as menuStyles } from "../MenuPage/styles/MenuStyle";
 import { startButtonAnimation, startTitleAnimation } from "../MenuPage/utils/animations";
 

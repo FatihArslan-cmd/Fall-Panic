@@ -11,14 +11,14 @@ const App = () => {
   };
 
   const handleGoToMenu = () => {
-    setCurrentScreen('menu');
+      setCurrentScreen('menu');
   };
 
   let content;
   if (currentScreen === 'menu') {
     content = <MenuPage onStartPress={handleStartGame} />;
   } else if (currentScreen === 'game') {
-    content = <GamePage onGoBack={handleGoToMenu} />;
+    content = <GamePage onGoToMenu={handleGoToMenu} />;
   }
 
   return (

@@ -6,7 +6,7 @@ import { useGame } from "../context/GameContext";
 
 const gameOverAnimation = require('../../../../assets/images/GameResultLottie.json');
 
-const GameOverOverlay = () => {
+const GameOverOverlay = ({ onGoToMenu }) => {
   const { gameOver, score, restartGame } = useGame();
 
   if (!gameOver) return null;
@@ -18,7 +18,7 @@ const GameOverOverlay = () => {
       showConfirmButton={true}
       confirmText="Play Again"
       onConfirm={restartGame}
-      onDismiss={restartGame} 
+      onDismiss={onGoToMenu}
     >
         <Text style={{ fontSize: 20,textAlign:'center', fontFamily: 'Orbitron-ExtraBold',paddingVertical:30 }}>
             Your score is {score}
@@ -26,9 +26,9 @@ const GameOverOverlay = () => {
 
         <LottieView
             source={gameOverAnimation}
-            autoPlay={true}           
-            loop={true}            
-            style={{ width: 200, height: 200, alignSelf: 'center' }} 
+            autoPlay={true}
+            loop={true}
+            style={{ width: 200, height: 200, alignSelf: 'center' }}
         />
 
     </CustomModal>

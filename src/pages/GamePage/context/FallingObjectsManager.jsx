@@ -10,7 +10,8 @@ const FallingObjectsManager = () => {
   const { positionX, gameOver, setGameOver } = useGame();
   const animationFrameId = useRef(null);
   const lastSpawnTime = useRef(Date.now());
-  const spawnInterval = useRef(2500); 
+  const spawnInterval = useRef(2500);
+  const previousGameOver = useRef(gameOver);
 
   const spawnObject = () => {
     const newObject = generateRandomObject(objectCount);
@@ -21,8 +22,8 @@ const FallingObjectsManager = () => {
   const checkCollision = (object) => {
     const playerLeft = positionX;
     const playerRight = positionX + CIRCLE_SIZE;
-    
-    const playerTop = screenHeight - BOTTOM_MARGIN - CIRCLE_SIZE; 
+
+    const playerTop = screenHeight - BOTTOM_MARGIN - CIRCLE_SIZE;
     const playerBottom = screenHeight - BOTTOM_MARGIN;
 
     const objectLeft = object.position.x;
@@ -39,20 +40,25 @@ const FallingObjectsManager = () => {
   };
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver) {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      return;
+    }
 
     const animate = () => {
       const currentTime = Date.now();
-      
+
       if (currentTime - lastSpawnTime.current > spawnInterval.current) {
         spawnObject();
         lastSpawnTime.current = currentTime;
-        spawnInterval.current = Math.max(1000, spawnInterval.current - 30); 
+        spawnInterval.current = Math.max(1000, spawnInterval.current - 30);
       }
 
       setObjects(prevObjects => {
         let hasCollision = false;
-        
+
         const updatedObjects = prevObjects
           .map(object => {
             const updatedObject = {
@@ -63,13 +69,13 @@ const FallingObjectsManager = () => {
               }
             };
 
-            if (checkCollision(updatedObject) && !gameOver) {
+            if (checkCollision(updatedObject)) {
               hasCollision = true;
             }
 
             return updatedObject;
           })
-          .filter(object => object.position.y < screenHeight + object.size); 
+          .filter(object => object.position.y < screenHeight + object.size);
 
         if (hasCollision) {
           setGameOver(true);
@@ -79,7 +85,7 @@ const FallingObjectsManager = () => {
       });
 
       if (!gameOver) {
-        animationFrameId.current = requestAnimationFrame(animate);
+         animationFrameId.current = requestAnimationFrame(animate);
       }
     };
 
@@ -91,6 +97,17 @@ const FallingObjectsManager = () => {
       }
     };
   }, [positionX, gameOver, setGameOver]);
+
+    useEffect(() => {
+        if (previousGameOver.current === true && gameOver === false) {
+            setObjects([]);
+            lastSpawnTime.current = Date.now();
+            spawnInterval.current = 2500;
+            setObjectCount(0);
+        }
+        previousGameOver.current = gameOver;
+    }, [gameOver]);
+
 
   return (
     <View>

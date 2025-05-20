@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     opacity: 0.85,
     elevation: 0,
-    borderRadius: 8,
+    borderRadius: 20,
   },
   cardContentBase: {
     padding: 16,

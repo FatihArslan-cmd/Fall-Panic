@@ -7,18 +7,18 @@ import ScoreDisplay from "fall-panic/src/pages/GamePage/components/ScoreDisplay"
 import { StyleSheet, View } from "react-native";
 import { GameProvider } from "./context/GameContext";
 
-const GamePage = () => {
+const GamePage = ({ onGoToMenu }) => {
   return (
     <GameProvider>
       <InputController>
         <View style={styles.container}>
           <View style={styles.background} />
-          
+
           <FallingObjectsManager />
           <Player />
           <ScoreDisplay />
-          
-          <GameOverOverlay />
+
+          <GameOverOverlay onGoToMenu={onGoToMenu} />
         </View>
       </InputController>
     </GameProvider>
