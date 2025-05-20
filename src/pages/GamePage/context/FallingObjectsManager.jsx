@@ -1,7 +1,8 @@
-import FallingObject, { generateRandomObject } from "../components/FallingObject";
+import FallingObject from "../components/FallingObject";
 import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { BOTTOM_MARGIN, CIRCLE_SIZE, screenHeight } from "../constants/index";
+import { generateRandomObject } from "../constants/index";
 import { useGame } from "./GameContext";
 
 const FallingObjectsManager = () => {
@@ -39,64 +40,69 @@ const FallingObjectsManager = () => {
     );
   };
 
-  useEffect(() => {
-    if (gameOver) {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-      return;
+useEffect(() => {
+  if (gameOver) {
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+    }
+    return;
+  }
+
+  const animate = () => {
+    const currentTime = Date.now();
+
+    if (currentTime - lastSpawnTime.current > spawnInterval.current) {
+      spawnObject(); // Bu çağrı artık useEffect'in güncel objectCount değerini kullanacak
+      lastSpawnTime.current = currentTime;
+      spawnInterval.current = Math.max(1000, spawnInterval.current - 30);
     }
 
-    const animate = () => {
-      const currentTime = Date.now();
+    setObjects(prevObjects => {
+      let hasCollision = false;
 
-      if (currentTime - lastSpawnTime.current > spawnInterval.current) {
-        spawnObject();
-        lastSpawnTime.current = currentTime;
-        spawnInterval.current = Math.max(1000, spawnInterval.current - 30);
-      }
-
-      setObjects(prevObjects => {
-        let hasCollision = false;
-
-        const updatedObjects = prevObjects
-          .map(object => {
-            const updatedObject = {
-              ...object,
-              position: {
-                ...object.position,
-                y: object.position.y + object.speed
-              }
-            };
-
-            if (checkCollision(updatedObject)) {
-              hasCollision = true;
+      const updatedObjects = prevObjects
+        .map(object => {
+          const updatedObject = {
+            ...object,
+            position: {
+              ...object.position,
+              y: object.position.y + object.speed
             }
+          };
 
-            return updatedObject;
-          })
-          .filter(object => object.position.y < screenHeight + object.size);
+          if (checkCollision(updatedObject)) {
+            hasCollision = true;
+          }
 
-        if (hasCollision) {
-          setGameOver(true);
-        }
+          return updatedObject;
+        })
+        .filter(object => object.position.y < screenHeight + object.size);
 
-        return updatedObjects;
-      });
-
-      if (!gameOver) {
-         animationFrameId.current = requestAnimationFrame(animate);
+      if (hasCollision) {
+        setGameOver(true);
       }
-    };
 
-    animationFrameId.current = requestAnimationFrame(animate);
+      return updatedObjects;
+    });
 
-    return () => {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-    };
-  }, [positionX, gameOver, setGameOver]);
+    // Burada gameOver kontrolü tekrar önemli, effect tekrar çalışsa bile
+    // gameOver true ise animationFrameId'yi iptal edecek.
+    if (!gameOver) {
+       animationFrameId.current = requestAnimationFrame(animate);
+    }
+  };
+
+  animationFrameId.current = requestAnimationFrame(animate);
+
+  // Cleanup fonksiyonu, effect her yeniden çalıştığında bir önceki requestAnimationFrame'ı iptal eder
+  return () => {
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null; // İyi bir pratik
+    }
+  };
+// objectCount'u bağımlılık dizisine ekleyin!
+}, [positionX, gameOver, setGameOver, objectCount]);
 
     useEffect(() => {
         if (previousGameOver.current === true && gameOver === false) {

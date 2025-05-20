@@ -1,7 +1,6 @@
 import React from "react";
 import Svg, { Circle, Polygon, Rect } from "react-native-svg";
 import { StyleSheet, View } from "react-native";
-import { SCORE_ITEM_COLOR, SCORE_ITEM_PROBABILITY, SCORE_VALUE, objectColors, objectTypes, screenWidth } from "../constants/index";
 
 const FallingObject = ({ position, size, speed, type, color, opacity }) => {
   const renderShape = () => {
@@ -50,28 +49,3 @@ const styles = StyleSheet.create({
 });
 
 export default FallingObject;
-
-export const generateRandomObject = (objectCount) => {
-  const size = Math.floor(Math.random() * 40) + 20;
-  const type = objectTypes[Math.floor(Math.random() * objectTypes.length)];
-  const x = Math.random() * (screenWidth - size);
-  const opacity = 1.0;
-  // Hız ayarı ilk kodunuzdaki gibi geri alındı (25 ile 28 arası)
-  const speed = Math.random() * 3 + 25;
-
-  const isScoreItem = Math.random() < SCORE_ITEM_PROBABILITY;
-  const color = isScoreItem ? SCORE_ITEM_COLOR : objectColors[Math.floor(Math.random() * objectColors.length)];
-  const scoreValue = isScoreItem ? SCORE_VALUE : 0;
-
-  return {
-    id: `object-${objectCount}`,
-    position: { x, y: -size },
-    size,
-    type,
-    color,
-    opacity,
-    speed,
-    isScoreItem,
-    scoreValue,
-  };
-};

@@ -4,10 +4,14 @@ import InputController from "fall-panic/src/pages/GamePage/components/InputContr
 import Player from "fall-panic/src/pages/GamePage/components/Player";
 import React from "react";
 import ScoreDisplay from "fall-panic/src/pages/GamePage/components/ScoreDisplay";
+import { useBackgroundSound } from "fall-panic/src/hooks/useBackgroundSound";
 import { StyleSheet, View } from "react-native";
 import { GameProvider } from "./context/GameContext";
 
 const GamePage = ({ onGoToMenu }) => {
+
+  useBackgroundSound('fall_panic_sound_track.mp3', true, true);
+
   return (
     <GameProvider>
       <InputController>

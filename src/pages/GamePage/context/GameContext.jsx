@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { Vibration } from "react-native";
 import { storage } from "../../../../../../src/utils/storage";
 import { CIRCLE_SIZE, MOVEMENT_SPEED, screenWidth } from "../constants/index";
 
@@ -34,19 +35,19 @@ export const GameProvider = ({ children }) => {
     setScore(0);
     setPositionX((screenWidth - CIRCLE_SIZE) / 2);
     if (scoreTimerId.current) {
-       clearInterval(scoreTimerId.current);
-       scoreTimerId.current = null;
+      clearInterval(scoreTimerId.current);
+      scoreTimerId.current = null;
     }
-     if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = null;
-     }
-     setIsMoving({ left: false, right: false });
+    if (animationFrameId.current) {
+      cancelAnimationFrame(animationFrameId.current);
+      animationFrameId.current = null;
+    }
+    setIsMoving({ left: false, right: false });
   };
 
   const addScore = (points) => {
     if (!gameOver) {
-       setScore(prevScore => prevScore + points);
+      setScore(prevScore => prevScore + points);
     }
   };
 
@@ -60,21 +61,21 @@ export const GameProvider = ({ children }) => {
       });
 
       if ((isMoving.left || isMoving.right) && !gameOver) {
-         animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
+        animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
       } else {
-         animationFrameId.current = null;
+        animationFrameId.current = null;
       }
     };
 
     if ((isMoving.left || isMoving.right) && !gameOver) {
-       if (animationFrameId.current === null) {
-          animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
-       }
+      if (animationFrameId.current === null) {
+        animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
+      }
     } else {
-       if (animationFrameId.current) {
-         cancelAnimationFrame(animationFrameId.current);
-         animationFrameId.current = null;
-       }
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = null;
+      }
     }
 
     return () => {
@@ -93,6 +94,15 @@ export const GameProvider = ({ children }) => {
       }
 
       try {
+        const vibrationEnabled = storage.getBoolean('vibrationEnabled');
+        if (vibrationEnabled === true) {
+          Vibration.vibrate(300);
+        }
+      } catch (e) {
+        console.error("Failed to check vibration setting or vibrate:", e);
+      }
+
+      try {
         const existingResultsString = storage.getString('gameResults');
         let existingResults = [];
 
@@ -100,12 +110,12 @@ export const GameProvider = ({ children }) => {
           try {
             existingResults = JSON.parse(existingResultsString);
             if (!Array.isArray(existingResults)) {
-                 console.warn("Storage item 'gameResults' was not an array, resetting.");
-                 existingResults = [];
+              console.warn("Storage item 'gameResults' was not an array, resetting.");
+              existingResults = [];
             }
           } catch (parseError) {
-             console.error("Failed to parse 'gameResults' from storage, resetting:", parseError);
-             existingResults = [];
+            console.error("Failed to parse 'gameResults' from storage, resetting:", parseError);
+            existingResults = [];
           }
         }
 
@@ -142,16 +152,13 @@ export const GameProvider = ({ children }) => {
         scoreTimerId.current = null;
       }
     };
-
   }, [gameOver, score]);
 
-
-   useEffect(() => {
+  useEffect(() => {
     if (gameOver) {
-        setIsMoving({ left: false, right: false });
+      setIsMoving({ left: false, right: false });
     }
-   }, [gameOver]);
-
+  }, [gameOver]);
 
   return (
     <GameContext.Provider
