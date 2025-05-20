@@ -10,7 +10,7 @@ export const GameProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
-  const gameDifficulty = 'easy';
+  const gameDifficulty = 'Easy';
 
   const scoreTimerId = useRef(null);
   const animationFrameId = useRef(null);

@@ -3,17 +3,17 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
   },
-  scrollContainer: {
+  settingsContainer: {
     flex: 1,
     width: '100%',
-    marginBottom: 70, // Space for back button
-  },
-  settingsContainer: {
-    width: '100%',
     paddingHorizontal: 10,
-  }
+  },
+  scrollContent: {
+        flexGrow: 1,          // İçeriğin, ScrollView'in yüksekliğini doldurmasını sağlar (içerik kısa ise)
+    justifyContent: 'center',
+  },
 });

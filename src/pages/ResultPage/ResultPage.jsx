@@ -1,16 +1,18 @@
 import BackButton from "fall-panic/src/components/BackButton";
-import React, { useEffect, useRef, useState } from "react";
+import EmptyState from "../../../../../src/components/EmptyState";
+import React, { useEffect, useRef } from "react";
 import ScoreList from "fall-panic/src/pages/ResultPage/components/ScoreList";
-import { mockScoreData } from "fall-panic/src/pages/ResultPage/components/mockData";
 import { Animated, StyleSheet, View } from "react-native";
-import { Surface, Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 import { styles as menuStyles } from "../MenuPage/styles/MenuStyle";
 import { startButtonAnimation, startTitleAnimation } from "../MenuPage/utils/animations";
+import { useGameResults } from "./hooks/useGameResults";
 
 const ResultPage = ({ onClose }) => {
   const titleAnimation = useRef(new Animated.Value(0)).current;
   const buttonAnimation = useRef(new Animated.Value(0)).current;
-  const [filteredScores, setFilteredScores] = useState(mockScoreData);
+
+  const filteredScores = useGameResults();
 
   const titleScale = titleAnimation.interpolate({
     inputRange: [0, 0.5, 1],
@@ -43,16 +45,16 @@ const ResultPage = ({ onClose }) => {
       >
         Scores
       </Animated.Text>
-   
+
       <Surface style={localStyles.scoreContent} elevation={4}>
-        
+
         {filteredScores.length > 0 ? (
           <View style={localStyles.listContainer}>
             <ScoreList scores={filteredScores} />
           </View>
         ) : (
           <View style={localStyles.emptyContainer}>
-            <Text style={localStyles.emptyText}>No scores found</Text>
+            <EmptyState message="No scores available" textColor="#d73901"/>
           </View>
         )}
       </Surface>

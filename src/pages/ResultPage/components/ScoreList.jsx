@@ -1,15 +1,15 @@
 import React from "react";
 import ScoreCard from "fall-panic/src/pages/ResultPage/components/ScoreCard";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import { AnimatedSection } from "../../../../../../src/components/Animations/EnteringPageAnimation";
 
 const ScoreList = ({ scores }) => {
   return (
     <FlatList
       data={scores}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item, index }) => ( 
-        <AnimatedSection key={item.id.toString()} index={index}>
+      keyExtractor={(_, index) => index.toString()}
+      renderItem={({ item, index }) => (
+        <AnimatedSection key={index.toString()} index={index}> 
           <ScoreCard
             date={item.date}
             difficulty={item.difficulty}

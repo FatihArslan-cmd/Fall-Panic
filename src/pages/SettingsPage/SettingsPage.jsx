@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from "react";
 import SoundSetting from "fall-panic/src/pages/SettingsPage/components/SoundSetting";
 import VibrationSetting from "fall-panic/src/pages/SettingsPage/components/VibrationSetting";
 import { styles } from "fall-panic/src/pages/SettingsPage/styles/SettingsPageStyles";
-import { Animated, View } from "react-native";
+import { Animated, ScrollView, View } from "react-native";
 import { styles as menuStyles } from "../MenuPage/styles/MenuStyle";
 import { startButtonAnimation, startTitleAnimation } from "../MenuPage/utils/animations";
 
@@ -58,21 +58,22 @@ const SettingsPage = ({ onClose }) => {
           Settings
         </Animated.Text>
 
-          <Animated.View
+        <Animated.View
             style={[
-              styles.settingsContainer, 
+              styles.settingsContainer,
               {
                 opacity: settingsOpacity,
                 transform: [{ translateY: settingsTranslateY }]
               }
             ]}
           >
-            <SoundSetting />
-            <MusicSetting />
-            <VibrationSetting />
-            <DifficultySetting />
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <SoundSetting />
+                <MusicSetting />
+                <VibrationSetting />
+                <DifficultySetting />
+            </ScrollView>
           </Animated.View>
-
 
         <BackButton buttonAnimation={buttonAnimation} onPress={onClose} />
       </View>
