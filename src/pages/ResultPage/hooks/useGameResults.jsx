@@ -3,6 +3,7 @@ import { storage } from "../../../../../../src/utils/storage";
 
 const useGameResults = () => {
   const [gameResults, setGameResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchScores = () => {
@@ -14,30 +15,30 @@ const useGameResults = () => {
           try {
             existingResults = JSON.parse(existingResultsString);
             if (!Array.isArray(existingResults)) {
-                 existingResults = [];
+              existingResults = [];
             }
-          } catch (parseError) {
-             existingResults = [];
+          } catch {
+            existingResults = [];
           }
         }
 
         const scoresWithDates = existingResults.map(item => ({
-            ...item,
-            date: new Date(item.date)
+          ...item,
+          date: new Date(item.date)
         }));
 
         setGameResults(scoresWithDates);
-
-      } catch (error) {
+      } catch {
         setGameResults([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchScores();
   }, []);
 
-  return gameResults;
+  return { gameResults, isLoading };
 };
 
-// Change from export default to named export
 export { useGameResults };

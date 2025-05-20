@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   scrollContent: {
-        flexGrow: 1,          // İçeriğin, ScrollView'in yüksekliğini doldurmasını sağlar (içerik kısa ise)
+        flexGrow: 1,          
     justifyContent: 'center',
   },
 });

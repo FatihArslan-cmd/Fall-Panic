@@ -1,18 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SettingItem from "./SettingItem";
-import { StyleSheet } from "react-native";
+import { Platform, ToastAndroid } from "react-native";
 import { RadioButton } from "react-native-paper";
+import { storage } from "../../../../../../src/utils/storage";
 
 const DifficultySetting = () => {
   const [difficulty, setDifficulty] = useState("medium");
 
+  useEffect(() => {
+    const storedDifficulty = storage.getString('difficulty');
+    if (storedDifficulty !== undefined) {
+      setDifficulty(storedDifficulty);
+    }
+  }, []);
+
   const handleDifficultyChange = (value) => {
     setDifficulty(value);
-    console.log("Difficulty changed to:", value);
+    storage.set('difficulty', value);
+
+    if (Platform.OS === "android") {
+      ToastAndroid.show(`Difficulty set to ${value}`, ToastAndroid.SHORT);
+    }
   };
 
   const labelFontStyle = {
-      fontFamily:'Orbitron-ExtraBold',
+    fontFamily: 'Orbitron-ExtraBold',
   };
 
   const rippleRed = "#D73901";
@@ -26,26 +38,25 @@ const DifficultySetting = () => {
       <RadioButton.Group
         onValueChange={handleDifficultyChange}
         value={difficulty}
-        style={styles.radioButtonGroupRow}
       >
         <RadioButton.Item
           label="Easy"
-          color="#D73901" 
-          rippleColor={rippleRed} 
+          color={rippleRed}
+          rippleColor={rippleRed}
           value="easy"
           labelStyle={labelFontStyle}
         />
         <RadioButton.Item
           label="Medium"
-          color="#D73901" 
-          rippleColor={rippleRed} 
+          color={rippleRed}
+          rippleColor={rippleRed}
           value="medium"
           labelStyle={labelFontStyle}
         />
         <RadioButton.Item
           label="Hard"
-          color="#D73901" 
-          rippleColor={rippleRed} 
+          color={rippleRed}
+          rippleColor={rippleRed}
           value="hard"
           labelStyle={labelFontStyle}
         />
@@ -53,13 +64,5 @@ const DifficultySetting = () => {
     </SettingItem>
   );
 };
-
-const styles = StyleSheet.create({
-  radioButtonGroupRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-});
 
 export default DifficultySetting;

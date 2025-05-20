@@ -12,7 +12,7 @@ const ResultPage = ({ onClose }) => {
   const titleAnimation = useRef(new Animated.Value(0)).current;
   const buttonAnimation = useRef(new Animated.Value(0)).current;
 
-  const filteredScores = useGameResults();
+  const { gameResults, isLoading } = useGameResults();
 
   const titleScale = titleAnimation.interpolate({
     inputRange: [0, 0.5, 1],
@@ -47,15 +47,16 @@ const ResultPage = ({ onClose }) => {
       </Animated.Text>
 
       <Surface style={localStyles.scoreContent} elevation={4}>
-
-        {filteredScores.length > 0 ? (
-          <View style={localStyles.listContainer}>
-            <ScoreList scores={filteredScores} />
-          </View>
-        ) : (
-          <View style={localStyles.emptyContainer}>
-            <EmptyState message="No scores available" textColor="#d73901"/>
-          </View>
+        {!isLoading && (
+          gameResults.length > 0 ? (
+            <View style={localStyles.listContainer}>
+              <ScoreList scores={gameResults} />
+            </View>
+          ) : (
+            <View style={localStyles.emptyContainer}>
+              <EmptyState message="No scores available" textColor="#d73901" />
+            </View>
+          )
         )}
       </Surface>
 
@@ -87,10 +88,6 @@ const localStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
   },
   listContainer: {
     flex: 1,
