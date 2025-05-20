@@ -1,7 +1,7 @@
 import FallingObject, { generateRandomObject } from "../components/FallingObject";
 import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
-import { BOTTOM_MARGIN, CIRCLE_SIZE, screenWidth } from "../constants/index";
+import { BOTTOM_MARGIN, CIRCLE_SIZE, screenHeight } from "../constants/index";
 import { useGame } from "./GameContext";
 
 const FallingObjectsManager = () => {
@@ -21,8 +21,9 @@ const FallingObjectsManager = () => {
   const checkCollision = (object) => {
     const playerLeft = positionX;
     const playerRight = positionX + CIRCLE_SIZE;
-    const playerTop = screenWidth - BOTTOM_MARGIN - CIRCLE_SIZE;
-    const playerBottom = screenWidth - BOTTOM_MARGIN;
+    
+    const playerTop = screenHeight - BOTTOM_MARGIN - CIRCLE_SIZE; 
+    const playerBottom = screenHeight - BOTTOM_MARGIN;
 
     const objectLeft = object.position.x;
     const objectRight = object.position.x + object.size;
@@ -46,7 +47,7 @@ const FallingObjectsManager = () => {
       if (currentTime - lastSpawnTime.current > spawnInterval.current) {
         spawnObject();
         lastSpawnTime.current = currentTime;
-    spawnInterval.current = Math.max(1000, spawnInterval.current - 30); // Changed from 50 to 30 decrement, min 1000
+        spawnInterval.current = Math.max(1000, spawnInterval.current - 30); 
       }
 
       setObjects(prevObjects => {
@@ -68,7 +69,7 @@ const FallingObjectsManager = () => {
 
             return updatedObject;
           })
-          .filter(object => object.position.y < screenWidth + object.size);
+          .filter(object => object.position.y < screenHeight + object.size); 
 
         if (hasCollision) {
           setGameOver(true);
