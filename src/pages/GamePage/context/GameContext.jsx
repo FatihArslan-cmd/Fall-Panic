@@ -11,10 +11,20 @@ export const GameProvider = ({ children }) => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
-  const gameDifficulty = 'Easy';
+  const [gameDifficulty, setGameDifficulty] = useState('easy');
 
   const scoreTimerId = useRef(null);
   const animationFrameId = useRef(null);
+
+  useEffect(() => {
+      const storedDifficulty = storage.getString('difficulty');
+      const validDifficulties = ['easy', 'medium', 'hard'];
+
+      if (storedDifficulty !== undefined && validDifficulties.includes(storedDifficulty)) {
+          setGameDifficulty(storedDifficulty);
+      }
+  }, []);
+
 
   const handleTouchStart = (touchX) => {
     if (gameOver) return;
@@ -63,19 +73,20 @@ export const GameProvider = ({ children }) => {
       if ((isMoving.left || isMoving.right) && !gameOver) {
         animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
       } else {
-        animationFrameId.current = null;
+        if (animationFrameId.current) {
+          cancelAnimationFrame(animationFrameId.current);
+          animationFrameId.current = null;
+        }
       }
     };
 
-    if ((isMoving.left || isMoving.right) && !gameOver) {
-      if (animationFrameId.current === null) {
+    if ((isMoving.left || isMoving.right) && !gameOver && animationFrameId.current === null) {
         animationFrameId.current = requestAnimationFrame(animatePlayerMovement);
-      }
-    } else {
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = null;
-      }
+    } else if (!(isMoving.left || isMoving.right) || gameOver) {
+         if (animationFrameId.current) {
+            cancelAnimationFrame(animationFrameId.current);
+            animationFrameId.current = null;
+        }
     }
 
     return () => {
@@ -110,11 +121,9 @@ export const GameProvider = ({ children }) => {
           try {
             existingResults = JSON.parse(existingResultsString);
             if (!Array.isArray(existingResults)) {
-              console.warn("Storage item 'gameResults' was not an array, resetting.");
               existingResults = [];
             }
           } catch (parseError) {
-            console.error("Failed to parse 'gameResults' from storage, resetting:", parseError);
             existingResults = [];
           }
         }
@@ -131,8 +140,6 @@ export const GameProvider = ({ children }) => {
         const finalResultsToSave = updatedResults.slice(0, MAX_RESULTS_TO_STORE);
 
         storage.set('gameResults', JSON.stringify(finalResultsToSave));
-        console.log("Game result saved:", newResult);
-        console.log("All saved results:", finalResultsToSave);
       } catch (error) {
         console.error("Failed to save game result:", error);
       }
@@ -152,7 +159,7 @@ export const GameProvider = ({ children }) => {
         scoreTimerId.current = null;
       }
     };
-  }, [gameOver, score]);
+  }, [gameOver, score, gameDifficulty]);
 
   useEffect(() => {
     if (gameOver) {
