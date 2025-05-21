@@ -94,14 +94,12 @@ useEffect(() => {
 
   animationFrameId.current = requestAnimationFrame(animate);
 
-  // Cleanup fonksiyonu, effect her yeniden çalıştığında bir önceki requestAnimationFrame'ı iptal eder
   return () => {
     if (animationFrameId.current) {
       cancelAnimationFrame(animationFrameId.current);
       animationFrameId.current = null; // İyi bir pratik
     }
   };
-// objectCount'u bağımlılık dizisine ekleyin!
 }, [positionX, gameOver, setGameOver, objectCount]);
 
     useEffect(() => {

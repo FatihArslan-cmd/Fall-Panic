@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Vibration } from "react-native";
+import { ToastService } from "../../../../../../src/context/ToastService";
 import { storage } from "../../../../../../src/utils/storage";
 import { CIRCLE_SIZE, MOVEMENT_SPEED, screenWidth } from "../constants/index";
 
@@ -15,6 +16,8 @@ export const GameProvider = ({ children }) => {
 
   const scoreTimerId = useRef(null);
   const animationFrameId = useRef(null);
+
+  const triggeredScoreThresholds = useRef(new Set());
 
   useEffect(() => {
       const storedDifficulty = storage.getString('difficulty');
@@ -53,6 +56,7 @@ export const GameProvider = ({ children }) => {
       animationFrameId.current = null;
     }
     setIsMoving({ left: false, right: false });
+    triggeredScoreThresholds.current.clear();
   };
 
   const addScore = (points) => {
@@ -153,13 +157,26 @@ export const GameProvider = ({ children }) => {
       }, 1000);
     }
 
+    const scoreThresholds = [
+      { threshold: 25, message: "You reached 25 points!", type: "success" },
+      { threshold: 100, message: "Awesome! 100 points!", type: "success" },
+      { threshold: 250, message: "Incredible! 250 points!", type: "success" },
+    ];
+
+    scoreThresholds.forEach(({ threshold, message, type }) => {
+      if (score >= threshold && !triggeredScoreThresholds.current.has(threshold)) {
+        ToastService.show(type, message);
+        triggeredScoreThresholds.current.add(threshold);
+      }
+    });
+
     return () => {
       if (scoreTimerId.current) {
         clearInterval(scoreTimerId.current);
         scoreTimerId.current = null;
       }
     };
-  }, [gameOver, score, gameDifficulty]);
+  }, [score, gameOver, gameDifficulty]);
 
   useEffect(() => {
     if (gameOver) {
